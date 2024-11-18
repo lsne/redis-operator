@@ -1,0 +1,220 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2022-11-06T14:06:14Z"
+  generateName: myrr-trr-
+  labels:
+    controller-revision-hash: myrr-trr-7596948b6
+    mysite.cn/clusterKind: RedisReplica
+    mysite.cn/clusterName: myrr-trr
+    mysite.cn/ctrlname: redis-operator
+    mysite.cn/statefulSetName: myrr-trr
+    role: ""
+    statefulset.kubernetes.io/pod-name: myrr-trr-0
+  name: mytt
+  namespace: default
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: true
+    controller: true
+    kind: StatefulSet
+    name: myrr-trr
+    uid: 606b0683-c284-456d-b5d5-ecb48ebbba00
+  resourceVersion: "15064018"
+  uid: c54abe6f-ec11-458f-91d0-3c44715a6c4c
+spec:
+  containers:
+  - env:
+    - name: REDIS_CONFIG_ACTIVEREHASHING
+      value: "yes"
+    - name: REDIS_CONFIG_ACTIVEDEFRAG
+      value: "yes"
+    - name: REDIS_CONFIG_ACTIVE_DEFRAG_CYCLE_MIN
+      value: "20"
+    - name: REDIS_CONFIG_ACTIVE_DEFRAG_CYCLE_MAX
+      value: "50"
+    - name: REDIS_CONFIG_ACTIVE_DEFRAG_IGNORE_BYTES
+      value: 500mb
+    - name: REDIS_CONFIG_ACTIVE_DEFRAG_THRESHOLD_LOWER
+      value: "30"
+    - name: REDIS_CONFIG_ACTIVE_DEFRAG_THRESHOLD_UPPER
+      value: "100"
+    - name: REDIS_CONFIG_APPENDONLY
+      value: "yes"
+    - name: REDIS_CONFIG_APPENDFSYNC
+      value: everysec
+    - name: REDIS_CONFIG_AOF_LOAD_TRUNCATED
+      value: "yes"
+    - name: REDIS_CONFIG_AOF_USE_RDB_PREAMBLE
+      value: "yes"
+    - name: REDIS_CONFIG_NO_APPENDFSYNC_ON_REWRITE
+      value: "no"
+    - name: REDIS_CONFIG_AUTO_AOF_REWRITE_PERCENTAGE
+      value: "100"
+    - name: REDIS_CONFIG_AUTO_AOF_REWRITE_MIN_SIZE
+      value: 256mb
+    - name: REDIS_CONFIG_LOGLEVEL
+      value: notice
+    - name: REDIS_CONFIG_PORT
+      value: "6379"
+    - name: REDIS_CONFIG_DATABASES
+      value: "16"
+    - name: REDIS_CONFIG_RDBCHECKSUM
+      value: "yes"
+    - name: REDIS_CONFIG_RDBCOMPRESSION
+      value: "yes"
+    - name: REDIS_CONFIG_STOP_WRITES_ON_BGSAVE_ERROR
+      value: "no"
+    - name: REDIS_CONFIG_TIMEOUT
+      value: "0"
+    - name: REDIS_CONFIG_MAXCLIENTS
+      value: "20000"
+    - name: REDIS_CONFIG_MAXMEMORY
+    - name: REDIS_CONFIG_MAXMEMORY_POLICY
+      value: noeviction
+    - name: REDIS_CONFIG_MAXMEMORY_SAMPLES
+      value: "5"
+    - name: REDIS_CONFIG_HZ
+      value: "80"
+    - name: REDIS_CONFIG_REPL_BACKLOG_SIZE
+      value: 512m
+    - name: REDIS_CONFIG_REPL_BACKLOG_TTL
+      value: "0"
+    - name: REDIS_CONFIG_SLOWLOG_LOG_SLOWER_THAN
+      value: "10000"
+    - name: REDIS_CONFIG_SLOWLOG_MAX_LEN
+      value: "2048"
+    - name: REDIS_CONFIG_TLS_PORT
+      value: "0"
+    - name: REDIS_CONFIG_CLUSTER_ENABLED
+      value: "yes"
+    - name: REDIS_CONFIG_CLUSTER_MIGRATION_BARRIER
+      value: "1"
+    - name: REDIS_CONFIG_CLUSTER_REQUIRE_FULL_COVERAGE
+      value: "yes"
+    - name: REDIS_CONFIG_CLUSTER_NODE_TIMEOUT
+      value: "60000"
+    - name: REDIS_CONFIG_SET_MAX_INTSET_ENTRIES
+      value: "512"
+    - name: REDIS_CONFIG_HASH_MAX_ZIPLIST_ENTRIES
+      value: "512"
+    - name: REDIS_CONFIG_HASH_MAX_ZIPLIST_VALUE
+      value: "64"
+    - name: REDIS_CONFIG_LIST_MAX_ZIPLIST_ENTRIES
+      value: "512"
+    - name: REDIS_CONFIG_LIST_MAX_ZIPLIST_VALUE
+      value: "64"
+    - name: REDIS_CONFIG_ZSET_MAX_ZIPLIST_ENTRIES
+      value: "128"
+    - name: REDIS_CONFIG_ZSET_MAX_ZIPLIST_VALUE
+      value: "64"
+    - name: POD_IP
+      valueFrom:
+        fieldRef:
+          apiVersion: v1
+          fieldPath: status.podIP
+    - name: REDIS_CONFIG_CLIENT_OUTPUT_BUFFER_LIMIT
+      value: |-
+        client-output-buffer-limit normal 0 0 0
+        client-output-buffer-limit normal 0 0 0
+        client-output-buffer-limit normal 0 0 0
+    image: redis:6.0.16-alpine
+    imagePullPolicy: IfNotPresent
+    lifecycle:
+      preStop:
+        exec:
+          command:
+          - sh
+          - /redis/bin/redis_shutdown.sh
+    livenessProbe:
+      exec:
+        command:
+        - sh
+        - /redis/bin/redis_check.sh
+      failureThreshold: 3
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    name: redis
+    ports:
+    - containerPort: 6379
+      name: client
+      protocol: TCP
+    - containerPort: 16379
+      name: gossip
+      protocol: TCP
+    readinessProbe:
+      exec:
+        command:
+        - sh
+        - /redis/bin/redis_check.sh
+      failureThreshold: 3
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 5
+    resources: {}
+    terminationMessagePath: /dev/termination-log
+    terminationMessagePolicy: File
+    volumeMounts:
+    - mountPath: /redis/bin
+      name: redis-bin
+    - mountPath: /redis/labels
+      name: redis-labels
+    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      name: kube-api-access-nmb27
+      readOnly: true
+  dnsPolicy: ClusterFirst
+  enableServiceLinks: true
+  hostname: myrr-trr-0
+  nodeName: node1
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext: {}
+  serviceAccount: default
+  serviceAccountName: default
+  subdomain: svc-myrr-trr
+  terminationGracePeriodSeconds: 30
+  tolerations:
+  - effect: NoExecute
+    key: node.kubernetes.io/not-ready
+    operator: Exists
+    tolerationSeconds: 300
+  - effect: NoExecute
+    key: node.kubernetes.io/unreachable
+    operator: Exists
+    tolerationSeconds: 300
+  volumes:
+  - configMap:
+      defaultMode: 493
+      name: myrr-trr-rcm
+    name: redis-bin
+  - downwardAPI:
+      defaultMode: 420
+      items:
+      - fieldRef:
+          apiVersion: v1
+          fieldPath: metadata.labels
+        path: labels
+    name: redis-labels
+  - name: kube-api-access-nmb27
+    projected:
+      defaultMode: 420
+      sources:
+      - serviceAccountToken:
+          expirationSeconds: 3607
+          path: token
+      - configMap:
+          items:
+          - key: ca.crt
+            path: ca.crt
+          name: kube-root-ca.crt
+      - downwardAPI:
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+            path: namespace

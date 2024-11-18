@@ -1,0 +1,13 @@
+apiVersion: redis.mysite.cn/v1beta1
+kind: RedisReplica
+metadata:
+  labels:
+    app.kubernetes.io/name: redisreplica
+    app.kubernetes.io/instance: redisreplica-sample
+    app.kubernetes.io/part-of: redis-operator
+    app.kuberentes.io/managed-by: kustomize
+    app.kubernetes.io/created-by: redis-operator
+  name: trr
+spec:
+  serviceName: testrr
+  replicas: 2
